@@ -63,7 +63,7 @@ export default function Home() {
       <WeatherGround weather={weather} />
 
       <header className="p-4 text-center bg-black/30 backdrop-blur-md shadow-lg">
-        <h1 className="text-4xl font-extrabold">Hawa Hawai</h1>
+        <h1 className="text-4xl font-extrabold">Weather Sense</h1>
       </header>
 
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
