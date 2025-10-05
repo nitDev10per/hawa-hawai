@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import WeatherAnimation from "@/components/WeatherAnimation";
 import { WeatherGround } from "@/components/WeatherGround";
+import { fetchWeatherData } from "@/services/api";
+
 
 const MapComponent = dynamic(() => import("../components/MapComponent"), {
   ssr: false, // Disable server-side rendering
@@ -12,15 +14,28 @@ export default function Home() {
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [result, setResult] = useState<any>(null);
-  const [weather, setWeather] = useState<string>('sunny'); // sunny, rain, cold, normal
+  const [weather, setWeather] = useState<string>('normal'); // sunny, rain, cold, normal
+  const [loading, setLoading] = useState(false);
+  const [coordinates, setCoordinates] = useState<{ lat: number; long: number }>({
+    lat: 28.6139,
+    long: 77.209,
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    const payload = {
+      lat: coordinates.lat,
+      long: coordinates.long,
+      date,
+    };
+    const res = await fetchWeatherData(coordinates.lat, coordinates.long, date);
+    console.log('res', res);
     setResult({
-      temp: "28°C",
-      condition: "☀️ Sunny with light breeze",
-      humidity: "60%",
+      data : res,
+      payload: payload
     });
+    setLoading(false);
   };
 
   const bgScreenClass = useMemo(() => {
@@ -54,7 +69,7 @@ export default function Home() {
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         {/* Map */}
         <div className="rounded-2xl overflow-hidden shadow-xl border border-white/20">
-          <MapComponent />
+          <MapComponent setCoordinates={setCoordinates}   />
         </div>
 
         {/* Form + Result */}
@@ -75,16 +90,64 @@ export default function Home() {
             </button>
           </form>
 
-          {result && (
-            <div className="mt-6 p-4 rounded-xl bg-white/10 border border-white/20 text-center">
-              <h3 className="text-xl font-bold mb-2">
-                Future Weather for {location || "Selected Location"} on {date}
-              </h3>
-              <p className="text-lg">{result.condition}</p>
-              <p className="mt-2">🌡 Temperature: {result.temp}</p>
-              <p>💧 Humidity: {result.humidity}</p>
+          {!loading ? result && (
+            <div className="mt-6 p-6 rounded-xl bg-white/10 border border-white/20 text-center space-y-6">
+              <h2 className="text-2xl font-bold mb-4">Results for lat:{(result.payload.lat).toFixed(2)}, long:{(result.payload.long).toFixed(2)} on {result.payload.date}</h2>
+              {/* Pollution Section */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Air Quality (Probability)</h2>
+                <div className="flex flex-col gap-3">
+                  {Object.entries(result.data[0]).map(([key, value]: any) => (
+                    <div key={key} className="flex items-center gap-4">
+                      <span className="w-36 text-left">{key}</span>
+                      <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${key === "Extremely Polluted"
+                              ? "bg-red-500"
+                              : key === "Heavily Polluted"
+                                ? "bg-orange-400"
+                                : "bg-yellow-300"
+                            }`}
+                          style={{ width: `${value}%` }}
+                        ></div>
+                      </div>
+                      <span className="w-12 text-right">{value.toFixed(1)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Weather Section */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Weather (Probability)</h2>
+                <div className="flex flex-col gap-3">
+                  {Object.entries(result.data[1]).map(([key, value]: any) => (
+                    <div key={key} className="flex items-center gap-4">
+                      <span className="w-36 text-left">{key}</span>
+                      <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${key === "Sunny"
+                              ? "bg-yellow-400"
+                              : key === "Partly Cloudy"
+                                ? "bg-blue-300"
+                                : "bg-gray-400"
+                            }`}
+                          style={{ width: `${value}%` }}
+                        ></div>
+                      </div>
+                      <span className="w-12 text-right">{value.toFixed(1)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          ) : (
+            <div className="mt-6 p-6 rounded-xl bg-white/10 border border-white/20 text-center">
+              <p>Loading...</p>
             </div>
           )}
+
         </div>
       </main>
     </div>

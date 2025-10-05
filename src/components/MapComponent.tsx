@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { MapContainer, TileLayer, Marker, useMap, LayersControl, useMapEvents } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -89,9 +89,13 @@ function ClickHandler({ setMarker }: { setMarker: (pos: LatLngExpression) => voi
     return null;
 }
 
-export default function MapComponent() {
+export default function MapComponent({ setCoordinates }: { setCoordinates: (coords: { lat: number; long: number }) => void }) {
     const defaultCenter: LatLngExpression = [28.6139, 77.209];
     const [markerPosition, setMarkerPosition] = useState<any | null>(null);
+
+    useEffect(() => {
+        setCoordinates({ lat: markerPosition ? markerPosition[0] : defaultCenter[0] as number, long: markerPosition ? markerPosition[1] : defaultCenter[1] as number });
+    }, [markerPosition]);
 
     return (
         <div className="relative h-full min-h-[90vh] max-h-screen w-full">
