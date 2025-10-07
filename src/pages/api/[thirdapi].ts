@@ -96,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { thirdapi, ...query } = req.query;
 
-    const url = `http://127.0.0.1:5000/api/${thirdapi}?${new URLSearchParams(query as any)}`;
+    const url = `https://web-production-74f24.up.railway.app/api/${thirdapi}?${new URLSearchParams(query as any)}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -128,12 +128,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('response2', records);
 
-    const afterResUrl = `http://127.0.0.1:5000/api/${thirdapi}_after_res?api_result=${encodeURIComponent(
-      JSON.stringify(records)
-    )}`;
+    const afterResUrl = `https://web-production-74f24.up.railway.app/api/${thirdapi}_after_res`;
 
-    const afterRes = await fetch(afterResUrl);
-    const afterResData = await afterRes.json();
+    const afterRes = await fetch(afterResUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ api_result: records }),
+    });
+
+    
+    console.log('afterRes', afterRes);
+    if (!afterRes.ok) {
+      throw new Error(`After res API error: ${afterRes.status}`);
+    }
+    const afterResData = JSON.parse(await afterRes.text());
 
     const key = paramsMap.get(thirdapi as string) || "Result";
 

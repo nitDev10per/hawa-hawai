@@ -29,7 +29,7 @@ export default function Home() {
       long: coordinates.long,
       date,
     };
-    const res = await fetchWeatherData(coordinates.lat, coordinates.long, date);
+    const res = await fetchWeatherData(coordinates.lat, coordinates.long, date, setResult);
     console.log('res', res);
     setResult({
       data : res,
