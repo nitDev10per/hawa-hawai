@@ -69,7 +69,7 @@ export default function Home() {
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         {/* Map */}
         <div className="rounded-2xl overflow-hidden shadow-xl border border-white/20">
-          <MapComponent setCoordinates={setCoordinates}   />
+          <MapComponent setCoordinates={setCoordinates} />
         </div>
 
         {/* Form + Result */}
@@ -94,7 +94,33 @@ export default function Home() {
             <div className="mt-6 p-6 rounded-xl bg-white/10 border border-white/20 text-center space-y-6">
               <h2 className="text-2xl font-bold mb-4">Results for lat:{(result.payload.lat).toFixed(2)}, long:{(result.payload.long).toFixed(2)} on {result.payload.date}</h2>
               {/* Pollution Section */}
-              <div>
+              {
+                result.data.map((res: any) => (
+                  <div>
+                    <h2 className="text-xl font-semibold mb-4">{Object.keys(res)[0]} (Probability)</h2>
+                    <div className="flex flex-col gap-3">
+                      {Object.entries(res[Object.keys(res)[0]]).map(([key, value]: any) => (
+                        <div key={key} className="flex items-center gap-4">
+                          <span className="w-36 text-left">{key}</span>
+                          <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${key === "Extremely Polluted"
+                                ? "bg-red-500"
+                                : key === "Heavily Polluted"
+                                  ? "bg-orange-400"
+                                  : "bg-yellow-300"
+                                }`}
+                              style={{ width: `${value}%` }}
+                            ></div>
+                          </div>
+                          <span className="w-12 text-right">{value?.toFixed(1)}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              }
+              {/* <div>
                 <h2 className="text-xl font-semibold mb-4">Air Quality (Probability)</h2>
                 <div className="flex flex-col gap-3">
                   {Object.entries(result.data[0]).map(([key, value]: any) => (
@@ -103,22 +129,22 @@ export default function Home() {
                       <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${key === "Extremely Polluted"
-                              ? "bg-red-500"
-                              : key === "Heavily Polluted"
-                                ? "bg-orange-400"
-                                : "bg-yellow-300"
+                            ? "bg-red-500"
+                            : key === "Heavily Polluted"
+                              ? "bg-orange-400"
+                              : "bg-yellow-300"
                             }`}
                           style={{ width: `${value}%` }}
                         ></div>
                       </div>
-                      <span className="w-12 text-right">{value.toFixed(1)}%</span>
+                      <span className="w-12 text-right">{value?.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               {/* Weather Section */}
-              <div>
+              {/* <div>
                 <h2 className="text-xl font-semibold mb-4">Weather (Probability)</h2>
                 <div className="flex flex-col gap-3">
                   {Object.entries(result.data[1]).map(([key, value]: any) => (
@@ -127,19 +153,19 @@ export default function Home() {
                       <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${key === "Sunny"
-                              ? "bg-yellow-400"
-                              : key === "Partly Cloudy"
-                                ? "bg-blue-300"
-                                : "bg-gray-400"
+                            ? "bg-yellow-400"
+                            : key === "Partly Cloudy"
+                              ? "bg-blue-300"
+                              : "bg-gray-400"
                             }`}
                           style={{ width: `${value}%` }}
                         ></div>
                       </div>
-                      <span className="w-12 text-right">{value.toFixed(1)}%</span>
+                      <span className="w-12 text-right">{value?.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
 
           ) : (

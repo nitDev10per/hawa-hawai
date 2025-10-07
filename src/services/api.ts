@@ -15,7 +15,7 @@ export async function fetchWeatherData(
   date: string
 ) {
   try {
-    const endpoints = [ "aod", "cloud"];
+    const endpoints = [ "cloud", "aod", "rain", "snow", "temp", "wind" ];
 
     // Parallel API calls
     const responses = await Promise.all(
