@@ -20,6 +20,7 @@ function getWeatherCategory(
 
   const tempMild = temperature["Mild (10°C to 20°C)"] ?? 0;
   const tempWarm = temperature["Warm (20°C to 35°C)"] ?? 0;
+  const tempHot = temperature["Hot (35°C to 45°C)"] ?? 0;
 
   const noRain = rain["No Rain"] ?? 0;
   const heavyRain = rain["Heavy Rain"] ?? 0;
@@ -30,7 +31,7 @@ function getWeatherCategory(
   const cloudy = cloud["Cloudy"] ?? 0;
 
   if (heavyRain + moderateRain + lightRain > 50) return "rain";
-  if (tempMild > 70 && sunny > 40 && noRain > 60) return "sunny";
+  if ((tempWarm > 70 && sunny > 40 && noRain > 60) || tempHot > 75) return "sunny";
   if (tempMild < 40 && cloudy > 50) return "cold";
   return "normal";
 }
