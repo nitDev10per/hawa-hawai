@@ -98,7 +98,7 @@ export default function MapComponent({ setCoordinates }: { setCoordinates: (coor
     }, [markerPosition]);
 
     return (
-        <div className="relative h-full min-h-[90vh] max-h-screen w-full">
+        <div className="relative h-full max-h-screen w-full">
             <MapContainer
                 center={defaultCenter}
                 zoom={5}

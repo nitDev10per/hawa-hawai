@@ -9,6 +9,53 @@ const MapComponent = dynamic(() => import("../components/MapComponent"), {
   ssr: false, // Disable server-side rendering
 });
 
+type WeatherData = Record<string, Record<string, number>>[];
+
+function getWeatherCategory(
+  data: WeatherData
+): "rain" | "cold" | "sunny" | "normal" {
+  const temperature = data.find(d => d["Temperature"])?.["Temperature"] ?? {};
+  const rain = data.find(d => d["Rain"])?.["Rain"] ?? {};
+  const cloud = data.find(d => d["Cloud Cover"])?.["Cloud Cover"] ?? {};
+
+  const tempMild = temperature["Mild (10°C to 20°C)"] ?? 0;
+  const tempWarm = temperature["Warm (20°C to 35°C)"] ?? 0;
+
+  const noRain = rain["No Rain"] ?? 0;
+  const heavyRain = rain["Heavy Rain"] ?? 0;
+  const moderateRain = rain["Moderate Rain"] ?? 0;
+  const lightRain = rain["Light Rain"] ?? 0;
+
+  const sunny = cloud["Sunny"] ?? 0;
+  const cloudy = cloud["Cloudy"] ?? 0;
+
+  if (heavyRain + moderateRain + lightRain > 50) return "rain";
+  if (tempMild > 70 && sunny > 40 && noRain > 60) return "sunny";
+  if (tempMild < 40 && cloudy > 50) return "cold";
+  return "normal";
+}
+
+type CategoryColorMap = Record<string, string>;
+
+const categoryColors: CategoryColorMap = {
+  "Extremely Polluted": "bg-red-500",
+  "Heavily Polluted": "bg-orange-500",
+  "Moderate": "bg-yellow-400",
+  "Cloudy": "bg-gray-400",
+  "Partly Cloudy": "bg-gray-200",
+  "Sunny": "bg-yellow-300",
+  "Mild (10°C to 20°C)": "bg-green-300",
+  "Warm (20°C to 35°C)": "bg-green-500",
+  "Heavy Rain": "bg-blue-700",
+  "Moderate Rain": "bg-blue-500",
+  "Light Rain": "bg-blue-300",
+  "No Rain": "bg-gray-100",
+  "Calm": "bg-teal-200",
+  "Light Breeze": "bg-teal-400",
+  "Moderate Breeze": "bg-teal-600",
+  "No Snow": "bg-white"
+};
+
 
 export default function Home() {
   const [date, setDate] = useState("");
@@ -35,6 +82,9 @@ export default function Home() {
       data : res,
       payload: payload
     });
+    const weatherCategory = getWeatherCategory(res as WeatherData);
+    setWeather(weatherCategory);
+    console.log('weatherCategory', weatherCategory);
     setLoading(false);
   };
 
@@ -104,11 +154,7 @@ export default function Home() {
                           <span className="w-36 text-left">{key}</span>
                           <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${key === "Extremely Polluted"
-                                ? "bg-red-500"
-                                : key === "Heavily Polluted"
-                                  ? "bg-orange-400"
-                                  : "bg-yellow-300"
+                              className={`h-full rounded-full ${categoryColors[key] || "bg-gray-300"
                                 }`}
                               style={{ width: `${value}%` }}
                             ></div>
@@ -179,3 +225,5 @@ export default function Home() {
     </div>
   );
 }
+
+
