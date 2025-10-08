@@ -107,7 +107,7 @@ export default function Home() {
   }, [weather])
 
   return (
-    <div className={`flex flex-col min-h-screen max-h-max transition-all duration-1000 ease-in-out ${bgScreenClass} text-white overflow-hidden`}>
+    <div className={`flex flex-col h-max min-h-screen transition-all duration-1000 ease-in-out ${bgScreenClass} text-white overflow-auto`}>
 
       <WeatherAnimation weather={weather} />
 
@@ -117,9 +117,9 @@ export default function Home() {
         <h1 className="text-4xl font-extrabold">Weather Sense</h1>
       </header>
 
-      <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:p-6 sm:p-4 min-h-screen">
         {/* Map */}
-        <div className="rounded-2xl overflow-hidden shadow-xl border border-white/20">
+        <div className="rounded-2xl overflow-hidden shadow-xl border border-white/20 min-h-[300px]">
           <MapComponent setCoordinates={setCoordinates} />
         </div>
 
@@ -135,7 +135,7 @@ export default function Home() {
             />
             <button
               type="submit"
-              className="w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-300 transition flex-1"
+              className="w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-300 transition flex-1 min-h-max"
             >
               Predict Weather
             </button>
