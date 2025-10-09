@@ -16,24 +16,25 @@ export async function fetchWeatherData(
   setRes: (res: any) => void
 ) {
   try {
-    const endpoints = [ "temp", "rain", "wind", "cloud", "snow", "aod" ];
+    const endpoints = ["temp", "rain", "wind", "cloud", "snow", "aod"];
 
     // Parallel API calls
     const responses = await Promise.all(
       endpoints.map((ep) =>
-        fetch(`${BASE_URL}/${ep}?lat=${lat}&long=${long}&date=${date}`).then((res) => {
+        fetch(`${BASE_URL}/${ep}?lat=${lat}&long=${long}&date=${date}`).then(async (res) => {
           if (!res.ok) throw new Error(`${ep} API error: ${res.status}`);
-          // const data = res.json();
-          // setRes((prev: any) => {
-          //   return {
-          //     payload: prev?.payload,
-          //     data: {
-          //       ...prev?.data,
-          //       ...data,
-          //     }
-          //   }
-          // });
-          return res.json();
+          const data = await res.json();
+          setRes((prev: any) => {
+            return {
+              ...prev,
+              data: [
+                ...(prev?.data || []),
+                data, // directly merge response object keys
+              ],
+            }
+          });
+          
+          return data;
         })
       )
     );

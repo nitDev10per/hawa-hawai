@@ -77,6 +77,12 @@ export default function Home() {
       long: coordinates.long,
       date,
     };
+
+    if(!date) {
+      alert("Please select a date");
+      setLoading(false);
+      return;
+    }
     const res = await fetchWeatherData(coordinates.lat, coordinates.long, date, setResult);
     console.log('res', res);
     setResult({
@@ -135,18 +141,24 @@ export default function Home() {
             />
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-300 transition flex-1 min-h-max"
             >
               Predict Weather
             </button>
           </form>
 
-          {!loading ? result && (
+
             <div className="mt-6 p-6 rounded-xl bg-white/10 border border-white/20 text-center space-y-6">
-              <h2 className="text-2xl font-bold mb-4">Results for lat:{(result.payload.lat).toFixed(2)}, long:{(result.payload.long).toFixed(2)} on {result.payload.date}</h2>
+              {loading && (
+                <div className="text-center mt-4">
+                  <p className="text-lg font-medium">Loading...</p>
+                </div>
+              )}
+              {result?.payload && <h2 className="text-2xl font-bold mb-4">Results for lat:{(result.payload?.lat)?.toFixed(2)}, long:{(result.payload?.long)?.toFixed(2)} on {result.payload?.date}</h2>}
               {/* Pollution Section */}
               {
-                result.data.map((res: any) => (
+                result &&result.data.map((res: any) => (
                   <div>
                     <h2 className="text-xl font-semibold mb-4">{Object.keys(res)[0]} (Probability)</h2>
                     <div className="flex flex-col gap-3">
@@ -167,59 +179,11 @@ export default function Home() {
                   </div>
                 ))
               }
-              {/* <div>
-                <h2 className="text-xl font-semibold mb-4">Air Quality (Probability)</h2>
-                <div className="flex flex-col gap-3">
-                  {Object.entries(result.data[0]).map(([key, value]: any) => (
-                    <div key={key} className="flex items-center gap-4">
-                      <span className="w-36 text-left">{key}</span>
-                      <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${key === "Extremely Polluted"
-                            ? "bg-red-500"
-                            : key === "Heavily Polluted"
-                              ? "bg-orange-400"
-                              : "bg-yellow-300"
-                            }`}
-                          style={{ width: `${value}%` }}
-                        ></div>
-                      </div>
-                      <span className="w-12 text-right">{value?.toFixed(1)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
 
-              {/* Weather Section */}
-              {/* <div>
-                <h2 className="text-xl font-semibold mb-4">Weather (Probability)</h2>
-                <div className="flex flex-col gap-3">
-                  {Object.entries(result.data[1]).map(([key, value]: any) => (
-                    <div key={key} className="flex items-center gap-4">
-                      <span className="w-36 text-left">{key}</span>
-                      <div className="flex-1 h-4 bg-white/20 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${key === "Sunny"
-                            ? "bg-yellow-400"
-                            : key === "Partly Cloudy"
-                              ? "bg-blue-300"
-                              : "bg-gray-400"
-                            }`}
-                          style={{ width: `${value}%` }}
-                        ></div>
-                      </div>
-                      <span className="w-12 text-right">{value?.toFixed(1)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
             </div>
 
-          ) : (
-            <div className="mt-6 p-6 rounded-xl bg-white/10 border border-white/20 text-center">
-              <p>Loading...</p>
-            </div>
-          )}
+
+          
 
         </div>
       </main>
