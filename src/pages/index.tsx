@@ -71,6 +71,7 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setResult(null);
     setLoading(true);
     const payload = {
       lat: coordinates.lat,
